@@ -4,65 +4,41 @@ export default {
       return new Response("OK", { status: 200 });
     }
 
-    let body;
-    try {
-      body = await request.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ error: "JSON inválido" }),
-        { status: 400 }
-      );
-    }
-
-    const text = body.text || "";
+    const { text = "" } = await request.json();
 
     const prompt =
       "Sos una IA asistente.\n" +
-      "Analizá el siguiente texto y explicá brevemente de qué trata:\n\n" +
+      "Explicá brevemente de qué trata el siguiente texto:\n\n" +
       text.slice(0, 3000);
 
-    let groqResponse;
-    try {
-      groqResponse = await fetch(
-        "https://api.groq.com/openai/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${env.GROQ_API_KEY}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            model: "llama3-8b-8192",
-            messages: [
-              { role: "user", content: prompt }
-            ]
-          })
-        }
-      );
-    } catch (e) {
-      return new Response(
-        JSON.stringify({ error: "Error al conectar con Groq" }),
-        { status: 500 }
-      );
-    }
+    const groqRes = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${env.GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: [
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 300
+        })
+      }
+    );
 
-    let data;
-    try {
-      data = await groqResponse.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ error: "Respuesta inválida de Groq" }),
-        { status: 500 }
-      );
-    }
+    const data = await groqRes.json();
 
-    const reply = JSON.stringify(data, null, 2);
+    const reply =
+      data.choices?.[0]?.message?.content ??
+      data.error?.message ??
+      "Sin respuesta";
 
     return new Response(
-      JSON.stringify({
-        status: "ok",
-        respuesta: reply
-      }),
+      JSON.stringify({ respuesta: reply }),
       {
         headers: {
           "Content-Type": "application/json",
