@@ -6,22 +6,31 @@ export default {
 
     const { text = "" } = await request.json();
 
-    const prompt = `
-Sos una IA asistente que devuelve SOLO JSON válido.
-No escribas texto fuera del JSON.
+const prompt = `
+Sos una IA asistente.
+Respondé SOLO JSON válido.
 
-Analizá el contenido y respondé en este formato:
+Si el contenido es informativo, generá una presentación.
+
+Formato:
 
 {
-  "accion": "resumir_pagina",
+  "accion": "crear_presentacion",
   "parametros": {
-    "resumen": "..."
+    "titulo": "...",
+    "slides": [
+      {
+        "titulo": "...",
+        "contenido": ["...", "..."]
+      }
+    ]
   }
 }
 
-Contenido:
-${text.slice(0, 3000)}
+Tema:
+${text.slice(0, 2000)}
 `;
+
 
 
     const groqRes = await fetch(
