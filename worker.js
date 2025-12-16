@@ -56,14 +56,7 @@ export default {
       );
     }
 
-    const reply =
-      data &&
-      data.choices &&
-      data.choices[0] &&
-      data.choices[0].message &&
-      data.choices[0].message.content
-        ? data.choices[0].message.content
-        : "No se pudo generar respuesta";
+    const reply = JSON.stringify(data, null, 2);
 
     return new Response(
       JSON.stringify({
