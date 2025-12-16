@@ -6,10 +6,23 @@ export default {
 
     const { text = "" } = await request.json();
 
-    const prompt =
-      "Sos una IA asistente.\n" +
-      "Explicá brevemente de qué trata el siguiente texto:\n\n" +
-      text.slice(0, 3000);
+    const prompt = `
+Sos una IA asistente que devuelve SOLO JSON válido.
+No escribas texto fuera del JSON.
+
+Analizá el contenido y respondé en este formato:
+
+{
+  "accion": "resumir_pagina",
+  "parametros": {
+    "resumen": "..."
+  }
+}
+
+Contenido:
+${text.slice(0, 3000)}
+`;
+
 
     const groqRes = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
