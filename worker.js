@@ -7,12 +7,13 @@ export default {
     const { text = "" } = await request.json();
 
 const prompt = `
-Sos una IA asistente.
-Respondé SOLO JSON válido.
+Respondé EXCLUSIVAMENTE con JSON válido.
+NO escribas texto antes ni después.
+NO expliques nada.
+NO uses Markdown.
+NO digas frases como "Aquí tienes".
 
-Si el contenido es informativo, generá una presentación.
-
-Formato:
+Formato OBLIGATORIO:
 
 {
   "accion": "crear_presentacion",
@@ -30,6 +31,7 @@ Formato:
 Tema:
 ${text.slice(0, 2000)}
 `;
+
 
 
 
